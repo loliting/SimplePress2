@@ -42,7 +42,4 @@ private:
     QAction* m_ExitAction;
     QAction* m_AboutAction;
     QAction* m_LicenseAction;
-
-    QShortcut* m_OpenShortcut;
-    QShortcut* m_ExitShortcut;
 };

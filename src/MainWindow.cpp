@@ -46,14 +46,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     m_FileMenu->addAction(m_ExitAction);
     m_HelpMenu->addAction(m_AboutAction);
     m_HelpMenu->addAction(m_LicenseAction);
+    m_OpenFileAction->setShortcut(Qt::CTRL | Qt::Key_O);
+    m_ExitAction->setShortcut(Qt::Key_Escape);
 
-    m_ExitShortcut = new QShortcut(this);
-    m_ExitShortcut->setKey(Qt::Key_Escape);
-    connect(m_ExitShortcut, &QShortcut::activated, this, &MainWindow::HandleExitAction);
-
-    m_OpenShortcut = new QShortcut(this);
-    m_OpenShortcut->setKey(Qt::CTRL | Qt::Key_O);
-    connect(m_OpenShortcut, &QShortcut::activated, this, &MainWindow::HandleOpenFile);
     connect(m_OpenPresentationPushButton, &QPushButton::clicked, this, &MainWindow::HandleOpenFile);
     connect(m_OpenFileAction, &QAction::triggered, this, &MainWindow::HandleOpenFile);
     connect(m_ExitAction, &QAction::triggered, this, &MainWindow::HandleExitAction);
