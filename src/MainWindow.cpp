@@ -15,7 +15,7 @@
 // along with this program; if not, If not,
 // see <https://www.gnu.org/licenses/>.
 
-#include <MainWindow.h>
+#include <MainWindow.hpp>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     this->setObjectName(QString::fromUtf8("MainWindow"));

@@ -16,7 +16,7 @@
 // see <https://www.gnu.org/licenses/>.
 
 #include <stdio.h>
-#include <MainWindow.h> 
+#include <MainWindow.hpp> 
 
 int main(int argc, char* argv[]){
     QApplication app(argc, argv);
