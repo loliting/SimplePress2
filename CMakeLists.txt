@@ -18,7 +18,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 if(WIN32)
-	set(CMAKE_PREFIX_PATH "$ENV{QTDIR}") # When configurating this project on Windows you need to specify a environment variable QTDIR with a path to qt5 instalation.
+	set(CMAKE_PREFIX_PATH "$ENV{QTDIR}") # When configurating this project on Windows you need to specify a environment variable QTDIR with a path to qt6 instalation.
 elseif(APPLE)
 	set(CMAKE_PREFIX_PATH "~/Qt/6.3.0/macos") # You might wanna change that.
 endif()
@@ -28,14 +28,16 @@ project(SimplePress2 VERSION 1.0 LANGUAGES CXX)
 set(PROJECT_SOURCES
     src/main.cpp
     src/MainWindow.cpp
+    src/Presentation.cpp
 )
 
 set(HEADER_FILES
     include/MainWindow.hpp
+    include/Presentation.hpp
 )
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
-
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(libzip REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
 qt_wrap_cpp(${Target_Name} PROJECT_SOURCES ${HEADER_FILES}) # MOC for header files in seperate folder
@@ -46,4 +48,5 @@ add_executable(${PROJECT_NAME} WIN32 ${WIN32_RESOURCES}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE libzip::zip)
