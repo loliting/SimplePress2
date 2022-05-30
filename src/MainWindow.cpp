@@ -47,14 +47,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     m_HelpMenu->addAction(m_AboutAction);
     m_HelpMenu->addAction(m_LicenseAction);
     m_OpenFileAction->setShortcut(Qt::CTRL | Qt::Key_O);
+#if __APPLE__
+    QList<QKeySequence> ExitShortcutsList;
+    ExitShortcutsList << Qt::Key_Escape << QKeySequence(Qt::CTRL | Qt::Key_W);
+    m_ExitAction->setShortcuts(ExitShortcutsList);
+#elif
     m_ExitAction->setShortcut(Qt::Key_Escape);
-
+#endif
     connect(m_OpenPresentationPushButton, &QPushButton::clicked, this, &MainWindow::HandleOpenFile);
     connect(m_OpenFileAction, &QAction::triggered, this, &MainWindow::HandleOpenFile);
     connect(m_ExitAction, &QAction::triggered, this, &MainWindow::HandleExitAction);
     connect(m_AboutAction, &QAction::triggered, this, &MainWindow::HandleOpenAboutAction);
     connect(m_LicenseAction, &QAction::triggered, this, &MainWindow::HandleLicenseAction);
-    
     this->RetranslateUI();
     show();
 }
