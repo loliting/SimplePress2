@@ -33,7 +33,7 @@
 *.app
 
 # Build Folder
-./build
+build/
 
 # Visual Studio Code Configurations
-./.vscode
+.vscode/
