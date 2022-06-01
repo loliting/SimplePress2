@@ -16,7 +16,9 @@
 // see <https://www.gnu.org/licenses/>.
 
 #include <Presentation.hpp>
-#include "vendor/RapidXML/rapidxml.hpp"
+#include <vendor/RapidXML/rapidxml.hpp>
+
+#define BUF_LENGTH 64
 
 bool DoesFileExist(const char* file_name){
      if (FILE *file = fopen(file_name, "r")) {
@@ -29,22 +31,24 @@ bool DoesFileExist(const char* file_name){
 
 static char* GetValue(const char* name, rapidxml::xml_node<> *root_node){
     if(!root_node)
-        return new char[]{0};
+        return new char[1]{0};
     rapidxml::xml_node<> *node = root_node->first_node(name, 0UL, false);
     if(!node)
-        return new char[]{0};
+        return new char[1]{0};
     return node->value();
 }
 
 static int GetIntValue(const char* name, rapidxml::xml_node<> *root_node){
     char* str = GetValue(name, root_node);
-    if(str[0] == '0' && (str[1] == 'x' || str[1] == 'X')){
-        str += 2;
-        try{
-            return std::stoi(str, nullptr, 16);
-        }
-        catch(std::exception){
-            return 0;
+    if(strlen(str) > 2){
+        if(str[0] == '0' && (str[1] == 'x' || str[1] == 'X')){
+            str += 2;
+            try{
+                return std::stoi(str, nullptr, 16);
+            }
+            catch(std::exception){
+                return 0;
+            }
         }
     }
     try{
@@ -68,27 +72,63 @@ static bool GetBooleanValue(const char* name, rapidxml::xml_node<> *root_node){
     return false;
 }
 
-static int ParseXML(char* XMLstr, Presentation* Pres){
-    rapidxml::xml_document<> doc;
+Presentation::Presentation(QString FilePath){
+    m_TmpDir.setAutoRemove(false);
+    this->m_Slides = std::vector<PresentationSlide>();
+    this->m_spres_archive = 0;
+    struct zip_file *zf = 0;
+    struct zip_stat zs;
+    int z_err;
+    char buf[BUF_LENGTH];
+    if((this->m_spres_archive = zip_open(FilePath.toStdString().c_str(), 0, &z_err)) == NULL){
+        zip_error_to_str(buf, BUF_LENGTH, z_err, errno);
+        throw new PresentationException(strcat((char*)"Failed to open spres archive. Error: ", buf));
+    }
+    z_err = zip_stat(this->m_spres_archive, "main.xml", ZIP_FL_NOCASE, &zs);
+    if(z_err){
+        zip_error_to_str(buf, BUF_LENGTH, z_err, errno);
+        throw new PresentationException(strcat((char*)"Failed to decompress spres archive. Error: ", buf));
+    }
+    zf = zip_fopen(this->m_spres_archive, "main.xml", ZIP_FL_NOCASE);
+    if(!zf){
+        throw new PresentationException((char*)"Failed to open main.xml file inside the spres archive.");
+    }
+
+    char XMLstr[zs.size + 1];
+    XMLstr[zs.size] = 0;
+    int sum = 0;
+    while (sum != zs.size) {
+        uint8_t len = zip_fread(zf, buf, BUF_LENGTH);
+        if (len < 0) {
+            throw new PresentationException("Failed to read main.xml file inside spres archive.");
+        }
+        for(uint8_t i = 0; i < len; i++){
+            XMLstr[sum + i] = buf[i];
+        }
+        sum += len;
+    }
+    zip_fclose(zf);
+
+    //PARSING
+
+    rapidxml::xml_document<> xml_doc;
     rapidxml::xml_node<> *root_node = NULL;
     rapidxml::xml_node<> *slide_node = NULL;
     rapidxml::xml_node<> *image_node = NULL;
     rapidxml::xml_node<> *text_node = NULL;
     try{
-        doc.parse<0>(XMLstr);
+        xml_doc.parse<0>(XMLstr);
     }
     catch(rapidxml::parse_error e){
-        printf("Failed to parse XML, what: %s\n", e.what());
-        return -2;
+        throw new PresentationException(strcat((char*)"Failed to parse main.xml file inside the spres archive. Error: ", e.what()));
     }
 
-    root_node = doc.first_node("Presentation", 0UL, false);
+    root_node = xml_doc.first_node("Presentation", 0UL, false);
     if(root_node == nullptr){
-        printf("Could not find Presentation XML root element.\n");
-        return -1;
+        throw new PresentationException("Failed to find XML root element (Presentation) in main.xml file inside the spres archive.");
     }
 
-    Pres->Title = GetValue("Title", root_node);
+    this->m_Title = GetValue("Title", root_node);
     
     slide_node = root_node->first_node("Slide", 0UL, false);
     int slide_count = 0;
@@ -146,64 +186,74 @@ static int ParseXML(char* XMLstr, Presentation* Pres){
         }
         slide.TextCounts = textCount;
 
-        Pres->Slides.push_back(slide);
+        this->m_Slides.push_back(slide);
         image_node = NULL;
         text_node = NULL;
         slide_count++;
         slide_node = slide_node->next_sibling();
     }
-    Pres->SlideCount = slide_count;
-    return 0;
-}
-
-Presentation Presentation::LoadPresentationFromFile(QString FileName){
-    Presentation *retval = new Presentation();
-
-    struct zip_file *zf;
-    struct zip_stat xml_stat;
-    int z_err;
-    char buf[64];
-    if((retval->m_spres_archive = zip_open(FileName.toStdString().c_str(), 0, &z_err)) == NULL){
-        zip_error_to_str(buf, sizeof(buf), z_err, errno);
-        printf("[ERROR] Failed to open archive. Error: %s\n", buf);
-        return Presentation();
-    }
-
-    z_err = zip_stat(retval->m_spres_archive, "main.xml", ZIP_FL_NOCASE, &xml_stat);
-    if(z_err){
-        zip_error_to_str(buf, sizeof(buf), z_err, errno);
-        printf("[ERROR] Failed to decompress archive. Error: %s\n", buf);
-        return Presentation();
-    }
-    zf = zip_fopen(retval->m_spres_archive, "main.xml", ZIP_FL_NOCASE);
-    if(!zf){
-        printf("[ERROR]: Failed to open main.xml file inside the archive.\n");
-    }
-    
-    char XMLstr[xml_stat.size + 1];
-
-    int sum = 0;
-    while (sum != xml_stat.size) {
-        uint8_t len = zip_fread(zf, buf, 64);
-        if (len < 0) {
-            printf("Failed to read presentation.\n");
-            return Presentation();
-        }
-        for(uint8_t i = 0; i < len; i++){
-            XMLstr[sum + i] = buf[i];
-        }
-        sum += len;
-    }
-    zip_fclose(zf);
-    XMLstr[xml_stat.size] = 0;
-    int err = ParseXML(XMLstr, retval);
-    if(err < 0){
-        printf("Failed to parse XML\n");
-        return Presentation();
-    }
-    return *retval;
+    this->m_SlideCount = slide_count;
+    //END PARSING
 }
 
 Presentation::~Presentation(){
     zip_close(m_spres_archive);
+    m_TmpDir.remove();
+}
+
+QPixmap Presentation::GetImage(QString ImageFileName){
+    if(m_TmpDir.isValid()){
+        QString filePath = m_TmpDir.path();
+        if(!filePath.endsWith("/"))
+            filePath += QString("/");
+        filePath += ImageFileName;
+        if(DoesFileExist(filePath.toStdString().c_str())){
+            return QPixmap(filePath);
+        }
+    }
+    else
+        throw new PresentationException(strcat((char*)"Failed to load an image. Could not create temporary directory. Error: ", m_TmpDir.errorString().toStdString().c_str()));
+
+    if(!m_spres_archive)
+        throw new PresentationException("Could not open spres archive to read image data.");
+    QString filePath = m_TmpDir.path();
+    if(!filePath.endsWith("/"))
+        filePath += QString("/");
+    filePath += ImageFileName;
+    char err_buf[BUF_LENGTH];
+    int z_err = 0; 
+    struct zip_file *zf;
+    struct zip_stat zs;
+
+    z_err = zip_stat(m_spres_archive, ImageFileName.toStdString().c_str(), ZIP_FL_NOCASE, &zs);
+    if(z_err){
+        zip_error_to_str(err_buf, BUF_LENGTH, z_err, errno);
+        printf("Failed to open Image: %s. Error: %s. Displaying 404 image instead.\n", ImageFileName.toStdString().c_str(), err_buf);
+        return QPixmap(); // TODO: return 404 image.
+    }
+    zf = zip_fopen(m_spres_archive, ImageFileName.toStdString().c_str(), ZIP_FL_NOCASE);
+    if(!zf){
+        printf("Failed to open Image: %s. Displaying 404 image instead.\n", ImageFileName.toStdString().c_str());
+        return QPixmap(); // TODO: return 404 image.
+    }
+    QFile file(filePath);
+    if(!file.open(QIODevice::OpenModeFlag::Append))
+    {
+        printf("Failed to open file. %s\n", filePath.toStdString().c_str());
+    }
+    else{
+        int sum = 0, len = 0;
+        char buf[BUF_LENGTH];
+        while (sum != zs.size) {
+            len = zip_fread(zf, buf, BUF_LENGTH);
+            if (len < 0) {
+                throw new PresentationException("Failed to read image data.");
+            }
+            file.write(buf, len);
+            sum += len;
+        }
+        file.close();
+    }
+    
+    return QPixmap(filePath);
 }

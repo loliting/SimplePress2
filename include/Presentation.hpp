@@ -20,8 +20,22 @@
 #include <QtCore/QtCore>
 #include <vector>
 #include <zip.h>
+#include <QtGui/QtGui>
+#include <exception>
 
 bool DoesFileExist(const char* file_name);
+
+class PresentationException: public std::exception
+{
+public:
+    PresentationException(const char *what) : m_what(what) { }
+    virtual const char *what() const throw()
+    {
+        return m_what;
+    }
+private:  
+    const char *m_what;
+};
 
 struct PresentationText
 {
@@ -61,12 +75,15 @@ public:
 struct Presentation
 {
 public:
-    std::vector<PresentationSlide> Slides;
-    QString Title;
-    unsigned int SlideCount;
+    Presentation(QString FilePath);
     QPixmap GetImage(QString ImageFileName);
-    static Presentation LoadPresentationFromFile(QString FileName);
     ~Presentation();
+    inline QString GetTitle() const { return m_Title; }
+    inline PresentationSlide GetSlide(unsigned int slideIndex) const { return m_Slides.at(slideIndex); }
 private:
+    unsigned int m_SlideCount;
+    QString m_Title;
     struct zip *m_spres_archive;
+    std::vector<PresentationSlide> m_Slides;
+    QTemporaryDir m_TmpDir = QTemporaryDir();
 };
