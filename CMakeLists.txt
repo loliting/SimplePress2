@@ -41,6 +41,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 find_package(libzip REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
+qt_add_resources(PROJECT_SOURCES Resources/res.qrc)
+
 qt_wrap_cpp(${Target_Name} PROJECT_SOURCES ${HEADER_FILES}) # MOC for header files in seperate folder
 
 add_executable(${PROJECT_NAME} WIN32 ${WIN32_RESOURCES}
