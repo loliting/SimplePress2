@@ -45,10 +45,19 @@ qt_add_resources(PROJECT_SOURCES Resources/res.qrc)
 
 qt_wrap_cpp(${Target_Name} PROJECT_SOURCES ${HEADER_FILES}) # MOC for header files in seperate folder
 
-add_executable(${PROJECT_NAME} WIN32 ${WIN32_RESOURCES}
-    MACOSX_BUNDLE ${APP_ICON_MACOSX}
-    ${PROJECT_SOURCES}
-)
+set(WIN32_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/res.rc")
+set(MACOSX_BUNDLE_ICON_FILE icon.icns)
+set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.icns)
+set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
+if(WIN32)
+add_executable(${PROJECT_NAME} WIN32 ${WIN32_RESOURCES} ${PROJECT_SOURCES})
+elseif(APPLE)
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${APP_ICON_MACOSX} ${PROJECT_SOURCES})
+else()
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+endif()
+
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
