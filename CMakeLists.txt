@@ -24,6 +24,7 @@ elseif(APPLE)
 endif()
 
 project(SimplePress2 VERSION 1.0 LANGUAGES CXX)
+set(CXX_STANDARD C++11)
 
 set(PROJECT_SOURCES
     src/main.cpp
