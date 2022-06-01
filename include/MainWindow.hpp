@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <QtWidgets>
+#include <QtWidgets/QtWidgets>
 
 class MainWindow : public QMainWindow
 {
@@ -33,7 +33,8 @@ private:
 private:
     QWidget* m_Window;
     QPushButton* m_OpenPresentationPushButton;
-    
+    QLabel* m_SimplePressBanner;
+
     QMenuBar* m_MenuBar;
     QMenu* m_FileMenu;
     QMenu* m_HelpMenu;

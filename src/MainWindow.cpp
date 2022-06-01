@@ -54,6 +54,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 #elif
     m_ExitAction->setShortcut(Qt::Key_Escape);
 #endif
+
+    m_SimplePressBanner = new QLabel("", m_Window);
+    m_SimplePressBanner->setObjectName("SimplePressBanner");
+    QPixmap Banner(":/images/SimplePressBanner.png");
+    m_SimplePressBanner->setGeometry(15, 40, Banner.width(), Banner.height());
+    m_SimplePressBanner->setPixmap(Banner);
+
     connect(m_OpenPresentationPushButton, &QPushButton::clicked, this, &MainWindow::HandleOpenFile);
     connect(m_OpenFileAction, &QAction::triggered, this, &MainWindow::HandleOpenFile);
     connect(m_ExitAction, &QAction::triggered, this, &MainWindow::HandleExitAction);
