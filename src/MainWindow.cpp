@@ -16,6 +16,7 @@
 // see <https://www.gnu.org/licenses/>.
 
 #include <MainWindow.hpp>
+#include <Presentation.hpp>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     this->setObjectName(QString::fromUtf8("MainWindow"));
@@ -90,7 +91,17 @@ void MainWindow::HandleOpenAboutAction(){
 }
 
 void MainWindow::HandleOpenFile(){
-    printf("[ERROR] File Opening is not implemented.\n");
+    QString filePath = QFileDialog::getOpenFileName(this, "Open .spres presentation", QString(), ".spres files (*.spres)");
+    try{
+        Presentation* pres = new Presentation(filePath);
+    }
+    catch (PresentationException e){
+        QMessageBox *messageBox = new QMessageBox(this);//new QMessageBox(QMessageBox::Icon::Critical, "e", QString("Failed to Load Presentation. " + QString(e.what())), QMessageBox::StandardButton::Ok, this);
+        messageBox->setWindowTitle("Failed to Load Presentation");
+        messageBox->setText(QString("Failed to Load Presentation:\n   " + QString(e.what())));
+        messageBox->show();
+    }
+
 }
 
 void MainWindow::HandleLicenseAction(){
