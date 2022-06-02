@@ -82,16 +82,20 @@ Presentation::Presentation(QString FilePath){
     char buf[BUF_LENGTH];
     if((this->m_spres_archive = zip_open(FilePath.toStdString().c_str(), 0, &z_err)) == NULL){
         zip_error_to_str(buf, BUF_LENGTH, z_err, errno);
-        throw new PresentationException(strcat((char*)"Failed to open spres archive. Error: ", buf));
+        char* err_str = new char[128];
+        strcpy(err_str, "Failed to open spres archive.\n\nError: ");
+        throw PresentationException(strcat(err_str, buf));
     }
     z_err = zip_stat(this->m_spres_archive, "main.xml", ZIP_FL_NOCASE, &zs);
     if(z_err){
         zip_error_to_str(buf, BUF_LENGTH, z_err, errno);
-        throw new PresentationException(strcat((char*)"Failed to decompress spres archive. Error: ", buf));
+        char* err_str = new char[128];
+        strcpy(err_str, "Failed to open main.xml file inside the spres archive.\n\nError: ");
+        throw PresentationException(strcat(err_str, buf));
     }
     zf = zip_fopen(this->m_spres_archive, "main.xml", ZIP_FL_NOCASE);
     if(!zf){
-        throw new PresentationException((char*)"Failed to open main.xml file inside the spres archive.");
+        throw PresentationException("Failed to open main.xml file inside the spres archive.");
     }
 
     char XMLstr[zs.size + 1];
@@ -100,7 +104,7 @@ Presentation::Presentation(QString FilePath){
     while (sum != zs.size) {
         uint8_t len = zip_fread(zf, buf, BUF_LENGTH);
         if (len < 0) {
-            throw new PresentationException("Failed to read main.xml file inside spres archive.");
+            throw PresentationException("Failed to read main.xml file inside spres archive.");
         }
         for(uint8_t i = 0; i < len; i++){
             XMLstr[sum + i] = buf[i];
@@ -120,16 +124,17 @@ Presentation::Presentation(QString FilePath){
         xml_doc.parse<0>(XMLstr);
     }
     catch(rapidxml::parse_error e){
-        throw new PresentationException(strcat((char*)"Failed to parse main.xml file inside the spres archive. Error: ", e.what()));
+        char* err_str = new char[128];
+        strcpy(err_str, "Failed to parse main.xml file inside the spres archive.\n\nError: ");
+        throw PresentationException(strcat(err_str, e.what()));
     }
 
     root_node = xml_doc.first_node("Presentation", 0UL, false);
     if(root_node == nullptr){
-        throw new PresentationException("Failed to find XML root element (Presentation) in main.xml file inside the spres archive.");
+        throw PresentationException("Failed to find XML root element (Presentation) in main.xml file inside the spres archive.");
     }
 
     this->Title = GetValue("Title", root_node);
-    
     slide_node = root_node->first_node("Slide", 0UL, false);
     int slide_count = 0;
     while (slide_node)
@@ -195,6 +200,18 @@ Presentation::Presentation(QString FilePath){
     //END PARSING
 }
 
+Presentation::Presentation(Presentation& other){
+    this->m_spres_archive = other.m_spres_archive;
+    this->Slides = other.Slides;
+    this->Title = other.Title;
+}
+
+Presentation::Presentation(Presentation&& other){
+    this->m_spres_archive = other.m_spres_archive;
+    this->Slides = other.Slides;
+    this->Title = other.Title;
+}
+
 Presentation::~Presentation(){
     zip_close(m_spres_archive);
     m_TmpDir.remove();
@@ -210,11 +227,14 @@ QPixmap Presentation::GetImage(QString ImageFileName){
             return QPixmap(filePath);
         }
     }
-    else
-        throw new PresentationException(strcat((char*)"Failed to load an image. Could not create temporary directory. Error: ", m_TmpDir.errorString().toStdString().c_str()));
+    else{
+        char* err_str = new char[128];
+        strcpy(err_str, "Failed to load an image. Could not create temporary directory.\n\nError: ");
+        throw PresentationException(strcat(err_str, m_TmpDir.errorString().toStdString().c_str()));
+    }
 
     if(!m_spres_archive)
-        throw new PresentationException("Could not open spres archive to read image data.");
+        throw PresentationException("Could not open spres archive to read image data.");
     QString filePath = m_TmpDir.path();
     if(!filePath.endsWith("/"))
         filePath += QString("/");
@@ -246,7 +266,7 @@ QPixmap Presentation::GetImage(QString ImageFileName){
         while (sum != zs.size) {
             len = zip_fread(zf, buf, BUF_LENGTH);
             if (len < 0) {
-                throw new PresentationException("Failed to read image data.");
+                throw PresentationException("Failed to read image data.");
             }
             file.write(buf, len);
             sum += len;

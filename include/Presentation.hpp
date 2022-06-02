@@ -76,6 +76,8 @@ struct Presentation
 {
 public:
     Presentation(QString FilePath);
+    Presentation(Presentation &);
+    Presentation(Presentation &&);
     QPixmap GetImage(QString ImageFileName);
     ~Presentation(); 
 public:
