@@ -74,7 +74,7 @@ static bool GetBooleanValue(const char* name, rapidxml::xml_node<> *root_node){
 
 Presentation::Presentation(QString FilePath){
     m_TmpDir.setAutoRemove(false);
-    this->m_Slides = std::vector<PresentationSlide>();
+    this->Slides = std::vector<PresentationSlide>();
     this->m_spres_archive = 0;
     struct zip_file *zf = 0;
     struct zip_stat zs;
@@ -128,7 +128,7 @@ Presentation::Presentation(QString FilePath){
         throw new PresentationException("Failed to find XML root element (Presentation) in main.xml file inside the spres archive.");
     }
 
-    this->m_Title = GetValue("Title", root_node);
+    this->Title = GetValue("Title", root_node);
     
     slide_node = root_node->first_node("Slide", 0UL, false);
     int slide_count = 0;
@@ -186,13 +186,12 @@ Presentation::Presentation(QString FilePath){
         }
         slide.TextCounts = textCount;
 
-        this->m_Slides.push_back(slide);
+        this->Slides.push_back(slide);
         image_node = NULL;
         text_node = NULL;
         slide_count++;
         slide_node = slide_node->next_sibling();
     }
-    this->m_SlideCount = slide_count;
     //END PARSING
 }
 
@@ -254,6 +253,5 @@ QPixmap Presentation::GetImage(QString ImageFileName){
         }
         file.close();
     }
-    
     return QPixmap(filePath);
 }

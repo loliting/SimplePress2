@@ -77,13 +77,11 @@ struct Presentation
 public:
     Presentation(QString FilePath);
     QPixmap GetImage(QString ImageFileName);
-    ~Presentation();
-    inline QString GetTitle() const { return m_Title; }
-    inline PresentationSlide GetSlide(unsigned int slideIndex) const { return m_Slides.at(slideIndex); }
+    ~Presentation(); 
+public:
+    QString Title;
+    std::vector<PresentationSlide> Slides;
 private:
-    unsigned int m_SlideCount;
-    QString m_Title;
     struct zip *m_spres_archive;
-    std::vector<PresentationSlide> m_Slides;
     QTemporaryDir m_TmpDir = QTemporaryDir();
 };
