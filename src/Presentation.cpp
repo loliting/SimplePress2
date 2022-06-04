@@ -157,7 +157,6 @@ Presentation::Presentation(QString FilePath){
             imageCount++;
             image_node = image_node->next_sibling();
         }
-        slide.ImageCount = imageCount;
 
         unsigned int textCount = 0;
         text_node = slide_node->first_node("Text", 0UL, false);
@@ -189,7 +188,6 @@ Presentation::Presentation(QString FilePath){
             textCount++;
             text_node = text_node->next_sibling();
         }
-        slide.TextCounts = textCount;
 
         this->Slides.push_back(slide);
         image_node = NULL;

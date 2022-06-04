@@ -67,9 +67,7 @@ public:
     QString SlideBackgroundFileName;
     QString SlideTitle;
     std::vector<PresentationText> Texts;
-    unsigned int TextCounts;
     std::vector<PresentationImage> Images;
-    unsigned int ImageCount;
 };
 
 struct Presentation
