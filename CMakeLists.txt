@@ -59,13 +59,15 @@ if(WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${WIN32_RESOURCES} ${PROJECT_SOURCES})
 elseif(APPLE)
     add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${APP_ICON_MACOSX} ${PROJECT_SOURCES})
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-    MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist
-    )
 else()
     add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 endif()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+MACOSX_BUNDLE TRUE
+OUTPUT_NAME "Simple Press 2"
+MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
