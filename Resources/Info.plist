@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+
+        <key>CFBundleDocumentTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>spres</string>
+                    <string>spres2</string>
+                </array>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+            </dict>
+        </array>
+
+        <key>CFBundleName</key>
+        <string></string>
+        <key>CFBundleIdentifier</key>
+        <string></string>
+        <key>CFBundleExecutable</key>
+        <string>SimplePress2</string>
+
+        <key>CFBundleVersion</key>
+        <string></string>
+        <key>CFBundleShortVersionString</key>
+        <string></string>
+
+        <key>LSMinimumSystemVersion</key>
+        <string></string>
+
+        <key>NSHumanReadableCopyright</key>
+        <string>Created by Karol Maksymowicz 
+        Copyright © 2022 Karol Maksymowicz.</string>
+
+        <key>CFBundleIconFile</key>
+        <string>icon.icns</string>
+
+        <key>CFBundleDevelopmentRegion</key>
+        <string>English</string>
+
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
+
+        <key>NSSupportsAutomaticGraphicsSwitching</key>
+        <true/>
+</dict>
+</plist>
