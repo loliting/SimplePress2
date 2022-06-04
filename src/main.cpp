@@ -15,11 +15,9 @@
 // along with this program; if not, If not,
 // see <https://www.gnu.org/licenses/>.
 
-#include <stdio.h>
-#include <MainWindow.hpp> 
+#include <Application.hpp>
 
 int main(int argc, char* argv[]){
-    QApplication app(argc, argv);
-    MainWindow mainWindow;
-    return app.exec();
+    Application app(argc, argv);
+    return app.Execute();
 }
