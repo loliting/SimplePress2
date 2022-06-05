@@ -46,7 +46,7 @@ static int GetIntValue(const char* name, rapidxml::xml_node<> *root_node){
             try{
                 return std::stoi(str, nullptr, 16);
             }
-            catch(std::exception){
+            catch(std::exception&){
                 return 0;
             }
         }
@@ -54,7 +54,7 @@ static int GetIntValue(const char* name, rapidxml::xml_node<> *root_node){
     try{
         return std::stoi(str, nullptr, 10);
     }
-    catch(std::exception){
+    catch(std::exception&){
         return 0;
     }
     return 0;
@@ -123,7 +123,7 @@ Presentation::Presentation(QString FilePath){
     try{
         xml_doc.parse<0>(XMLstr);
     }
-    catch(rapidxml::parse_error e){
+    catch(rapidxml::parse_error& e){
         char* err_str = new char[128];
         strcpy(err_str, "Failed to parse main.xml file inside the spres archive.\n\nError: ");
         throw PresentationException(strcat(err_str, e.what()));
@@ -179,10 +179,10 @@ Presentation::Presentation(QString FilePath){
                 uint8_t bytes[4];
             };
             RGBA rgba;
-            rgba.bytes[3] = (uint8_t)GetIntValue("FontColorR", text_node);
-            rgba.bytes[2] = (uint8_t)GetIntValue("FontColorG", text_node);
-            rgba.bytes[1] = (uint8_t)GetIntValue("FontColorB", text_node);
-            rgba.bytes[0] = 255;
+            rgba.bytes[0] = (uint8_t)GetIntValue("FontColorR", text_node);
+            rgba.bytes[1] = (uint8_t)GetIntValue("FontColorG", text_node);
+            rgba.bytes[2] = (uint8_t)GetIntValue("FontColorB", text_node);
+            rgba.bytes[3] = 255;
             text.FontColor = rgba.RGBA;
             slide->Texts.push_back(text);
             textCount++;
