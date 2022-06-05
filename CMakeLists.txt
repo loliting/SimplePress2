@@ -15,7 +15,7 @@
 # along with this program; if not, If not,
 # see <https://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.10)
 
 if(WIN32)
 	set(CMAKE_PREFIX_PATH "$ENV{QTDIR}") # When configurating this project on Windows you need to specify a environment variable QTDIR with a path to qt6 instalation.
@@ -23,7 +23,7 @@ elseif(APPLE)
 	set(CMAKE_PREFIX_PATH "~/Qt/6.3.0/macos") # You might wanna change that.
 endif()
 
-project(SimplePress2 VERSION 1.0)
+project(SimplePress2 VERSION 1.0 LANGUAGES CXX)
 
 set(CXX_STANDARD C++11)
 
@@ -33,6 +33,7 @@ set(PROJECT_SOURCES
     src/Presentation.cpp
     src/PresentationWindow.cpp
     src/Application.cpp
+    src/PresentationSlideView.cpp
 )
 
 set(HEADER_FILES
@@ -40,6 +41,7 @@ set(HEADER_FILES
     include/Presentation.hpp
     include/PresentationWindow.hpp
     include/Application.hpp
+    include/PresentationSlideView.hpp
 )
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
@@ -70,5 +72,5 @@ MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
 target_link_libraries(${PROJECT_NAME} PRIVATE libzip::zip)
