@@ -80,7 +80,7 @@ public:
     ~Presentation(); 
 public:
     QString Title;
-    std::vector<PresentationSlide> Slides;
+    std::vector<PresentationSlide*> Slides;
 private:
     struct zip *m_spres_archive;
     QTemporaryDir m_TmpDir = QTemporaryDir();

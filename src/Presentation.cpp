@@ -74,7 +74,7 @@ static bool GetBooleanValue(const char* name, rapidxml::xml_node<> *root_node){
 
 Presentation::Presentation(QString FilePath){
     m_TmpDir.setAutoRemove(false);
-    this->Slides = std::vector<PresentationSlide>();
+    this->Slides = std::vector<PresentationSlide*>();
     this->m_spres_archive = 0;
     struct zip_file *zf = 0;
     struct zip_stat zs;
@@ -139,9 +139,9 @@ Presentation::Presentation(QString FilePath){
     int slide_count = 0;
     while (slide_node)
     {
-        PresentationSlide slide;
-        slide.SlideTitle = GetValue("SlideTitle ", slide_node);
-        slide.SlideBackgroundFileName = GetValue("SlideBackgroundFilename", slide_node);
+        PresentationSlide* slide = new PresentationSlide;
+        slide->SlideTitle = GetValue("SlideTitle ", slide_node);
+        slide->SlideBackgroundFileName = GetValue("SlideBackgroundFilename", slide_node);
 
         unsigned int imageCount = 0;
         image_node = slide_node->first_node("Image", 0UL, false);
@@ -153,7 +153,7 @@ Presentation::Presentation(QString FilePath){
                                     GetIntValue("YPosition", image_node));
             image.Size = QSize(GetIntValue("Width", image_node),
                                     GetIntValue("Height", image_node));
-            slide.Images.push_back(image);
+            slide->Images.push_back(image);
             imageCount++;
             image_node = image_node->next_sibling();
         }
@@ -184,7 +184,7 @@ Presentation::Presentation(QString FilePath){
             rgba.bytes[1] = (uint8_t)GetIntValue("FontColorB", text_node);
             rgba.bytes[0] = 255;
             text.FontColor = rgba.RGBA;
-            slide.Texts.push_back(text);
+            slide->Texts.push_back(text);
             textCount++;
             text_node = text_node->next_sibling();
         }
@@ -245,13 +245,18 @@ QPixmap Presentation::GetImage(QString ImageFileName){
     z_err = zip_stat(m_spres_archive, ImageFileName.toStdString().c_str(), ZIP_FL_NOCASE, &zs);
     if(z_err){
         zip_error_to_str(err_buf, BUF_LENGTH, z_err, errno);
-        printf("Failed to open Image: %s. Error: %s. Displaying 404 image instead.\n", ImageFileName.toStdString().c_str(), err_buf);
-        return QPixmap(); // TODO: return 404 image.
+        char* err_str = new char[128];
+        strcpy(err_str, "Failed to open Image: ");
+        strcat(err_str, ImageFileName.toStdString().c_str());
+        strcat(err_str, ". Error: ");
+        strcat(err_str, err_buf);
+        throw PresentationException(err_str);
     }
     zf = zip_fopen(m_spres_archive, ImageFileName.toStdString().c_str(), ZIP_FL_NOCASE);
     if(!zf){
-        printf("Failed to open Image: %s. Displaying 404 image instead.\n", ImageFileName.toStdString().c_str());
-        return QPixmap(); // TODO: return 404 image.
+        char* err_str = new char[128];
+        strcpy(err_str, "Failed to open Image: ");
+        throw PresentationException(strcat(err_str, ImageFileName.toStdString().c_str()));
     }
     QFile file(filePath);
     if(!file.open(QIODevice::OpenModeFlag::Append))
