@@ -21,21 +21,21 @@
 #include <PresentationWindow.hpp>
 
 PresentationWindow::PresentationWindow(QWidget *parent) : QMainWindow(parent) {    
-    #ifdef __APPLE__
+    this->setWindowTitle("Simple Press 2");
     Qt::WindowFlags windowFlags = 
-        Qt::WindowFullscreenButtonHint |
-        Qt::WindowSystemMenuHint |
-        Qt::FramelessWindowHint;
+        Qt::WindowFullscreenButtonHint;
     setWindowFlags(windowFlags);
     this->setFixedSize(QGuiApplication::primaryScreen()->size());
     this->showFullScreen();
-    this->setPalette(QPalette(QColor::fromRgb(255,255,255,255)));
-    #elif
-    //TODO
-    #endif
+    this->setPalette(QPalette(QColor::fromRgb(0, 0, 0, 255)));
 }
 
 void PresentationWindow::setPresentation(Presentation *Pres){
     m_presentation = Pres;
+    if(!m_presentation->Title.isEmpty())
+        this->setWindowTitle("Simple Press 2 - " + m_presentation->Title);
+    m_slideView = new PresentationSlideView(this);
+    m_slideView->setSlide(m_presentation, 0);
+    m_slideView->show();
 }
 
