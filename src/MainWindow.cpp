@@ -94,22 +94,24 @@ void MainWindow::HandleOpenAboutAction(){
 void MainWindow::HandleOpenFile(){
     Presentation* pres = nullptr;
     QString filePath = QFileDialog::getOpenFileName(this, "Open .spres presentation", QString(), ".spres files (*.spres)");
-    try{
-        pres = new Presentation(filePath);
+    if(!filePath.isEmpty()){
+        try{
+            pres = new Presentation(filePath);
+        }
+        catch (PresentationException e){
+            QMessageBox *messageBox = new QMessageBox(this);//new QMessageBox(QMessageBox::Icon::Critical, "e", QString("Failed to Load Presentation. " + QString(e.what())), QMessageBox::StandardButton::Ok, this);
+            messageBox->setWindowTitle("Failed to Load Presentation");
+            messageBox->setText(QString("Failed to Load Presentation:\n   " + QString(e.what())));
+            messageBox->show();
+            return;
+        }
+        Application* app = static_cast<Application*>(QApplication::instance());
+        if(!app->presentationWindow)
+            app->presentationWindow = new PresentationWindow();
+        this->hide();
+        app->presentationWindow->setPresentation(pres);
+        app->presentationWindow->showFullScreen();
     }
-    catch (PresentationException e){
-        QMessageBox *messageBox = new QMessageBox(this);//new QMessageBox(QMessageBox::Icon::Critical, "e", QString("Failed to Load Presentation. " + QString(e.what())), QMessageBox::StandardButton::Ok, this);
-        messageBox->setWindowTitle("Failed to Load Presentation");
-        messageBox->setText(QString("Failed to Load Presentation:\n   " + QString(e.what())));
-        messageBox->show();
-        return;
-    }
-    Application* app = static_cast<Application*>(QApplication::instance());
-    if(!app->presentationWindow)
-        app->presentationWindow = new PresentationWindow();
-    this->hide();
-    app->presentationWindow->setPresentation(pres);
-    app->presentationWindow->show();
 }
 
 void MainWindow::HandleLicenseAction(){
