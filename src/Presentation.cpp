@@ -155,7 +155,7 @@ Presentation::Presentation(QString FilePath){
                                     GetIntValue("Height", image_node));
             slide->Images.push_back(image);
             imageCount++;
-            image_node = image_node->next_sibling("Image", 6, false);
+            image_node = image_node->next_sibling(image_node->name(), image_node->name_size(), false);
         }
 
         unsigned int textCount = 0;
@@ -186,7 +186,7 @@ Presentation::Presentation(QString FilePath){
             text.FontColor = rgba.RGBA;
             slide->Texts.push_back(text);
             textCount++;
-            text_node = text_node->next_sibling("Texts", 6, false);
+            text_node = text_node->next_sibling(text_node->name(), text_node->name_size(), false);
         }
 
         this->Slides.push_back(slide);
