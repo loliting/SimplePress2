@@ -73,8 +73,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
             m_parentWidget = new QWidget(this);
             m_parentWidget->setFixedSize(this->size());
             m_slide = m_presentation->Slides.at(index);
-            if(!m_slide->SlideBackgroundFileName.isEmpty() && !m_slide->SlideBackgroundFileName.isNull()){
-                this->setAutoFillBackground(false);
+            if(!m_slide->SlideBackgroundFileName.isEmpty()){
                 m_backgroundImage = new QLabel(m_parentWidget);
                 m_backgroundImage->setFixedSize(this->size());
                 m_backgroundImage->setScaledContents(true);
@@ -83,6 +82,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                     QPixmap pixmap = m_presentation->GetImage(m_slide->SlideBackgroundFileName);
                     
                     m_backgroundImage->setPixmap(pixmap);
+                    this->setAutoFillBackground(false);
                 }
                 catch(const PresentationException& e)
                 {
