@@ -19,6 +19,7 @@
 
 #include <QtWidgets/QtWidgets>
 #include <Presentation.hpp>
+#include <PresentationSlideView.hpp>
 
 class PresentationWindow : public QMainWindow
 {
@@ -29,6 +30,13 @@ public:
     void setPresentation(Presentation* presentation);
     inline bool hasPresentation() const { return !(!m_presentation); };
 private:
+    void handleNextSlideAction();
+    void handlePreviousSlideSlideAction();
+    void handleCloseWindowAction();
+private:
     QWidget* m_Window;
     Presentation *m_presentation;
+    PresentationSlideView *m_slideView;
+    unsigned int m_currentSlide;
+    QAction *m_nextSlideAction, *m_previousSlideAction, *m_closeWindowAction;
 };
