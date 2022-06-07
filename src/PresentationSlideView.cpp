@@ -123,6 +123,9 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                 text->setFixedSize(getSize(m_slide->Texts.at(i).Size, m_parentWidget->size()));
                 text->move(getPosition(m_slide->Texts.at(i).Position, m_parentWidget->size(), text->size()));
                 text->setAlignment(GetQtAlignmentFromSpresAlignment(m_slide->Texts.at(i).Alignment));
+                text->setScaledContents(true);
+                text->setWordWrap(true);
+                
             }
         }
     }
