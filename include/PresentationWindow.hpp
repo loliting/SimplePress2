@@ -29,6 +29,7 @@ public:
     void RetranslateUI();
     void setPresentation(Presentation* presentation);
     inline bool hasPresentation() const { return !(!m_presentation); };
+    ~PresentationWindow();
 private:
     void handleNextSlideAction();
     void handlePreviousSlideSlideAction();

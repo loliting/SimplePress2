@@ -100,3 +100,16 @@ void PresentationWindow::handlePreviousSlideSlideAction(){
         m_slideView = newSlideView;
     }
 }
+
+PresentationWindow::~PresentationWindow(){
+    if(m_Window)
+        delete m_Window;
+    if(m_slideView)
+        delete m_slideView;
+    if(m_closeWindowAction)
+        delete m_closeWindowAction;
+    if(m_nextSlideAction)
+        delete m_nextSlideAction;
+    if(m_previousSlideAction)
+        delete m_previousSlideAction;
+}
