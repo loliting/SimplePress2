@@ -16,7 +16,6 @@
 // see <https://www.gnu.org/licenses/>.
 
 #pragma once
-
 #include <QtWidgets/QtWidgets>
 #include <Presentation.hpp>
 #include <vector>
@@ -28,6 +27,7 @@ public:
     explicit PresentationSlideView(QWidget *parent = nullptr);
     void setSlide(Presentation* presentation, unsigned int index);
     void clearSlideView();
+    ~PresentationSlideView();
 private:
     Presentation *m_presentation = nullptr;
     PresentationSlide *m_slide = nullptr;

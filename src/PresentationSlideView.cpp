@@ -130,3 +130,12 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
         }
     }
 }
+
+PresentationSlideView::~PresentationSlideView(){
+    if(m_backgroundImage)
+        delete m_backgroundImage;
+    if(m_parentWidget)
+        delete m_parentWidget;
+    m_textWidgets.clear();
+    m_imagesWidgets.clear();
+}
