@@ -163,6 +163,7 @@ Presentation::Presentation(QString FilePath){
         while(text_node){
             PresentationText text;
             text.Text = GetValue("String", text_node);
+            text.Text.replace("\\n", "\n");
             text.Alignment = GetIntValue("Alignment", text_node);
             text.isBold = GetBooleanValue("isBold", text_node);
             text.isItalic = GetBooleanValue("isItalic", text_node);
