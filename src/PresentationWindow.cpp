@@ -23,16 +23,14 @@
 
 PresentationWindow::PresentationWindow(QWidget *parent) : QMainWindow(parent) {    
     this->setWindowTitle("Simple Press 2");
-    Qt::WindowFlags windowFlags = 
-        Qt::WindowFullscreenButtonHint;
-    setWindowFlags(windowFlags);
+    setWindowFlags(windowFlags() & ~Qt::WindowFullscreenButtonHint);
     this->setFixedSize(QGuiApplication::primaryScreen()->size());
     this->showFullScreen();
     this->setPalette(QPalette(QColor::fromRgb(0, 0, 0, 255)));
     m_closeWindowAction = new QAction(this);
     m_nextSlideAction = new QAction(this);
     m_previousSlideAction = new QAction(this);
-
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
     QList<QKeySequence> keySequenceList;
 #if __APPLE__
     keySequenceList << Qt::Key_Escape << QKeySequence(Qt::CTRL | Qt::Key_W);
@@ -71,10 +69,15 @@ void PresentationWindow::setPresentation(Presentation *Pres){
 
 void PresentationWindow::handleCloseWindowAction(){
     Application* app = static_cast<Application*>(QApplication::instance());
-    this->hide();
-    app->mainWindow->show();
-    delete app->presentationWindow;
+    close();
     app->presentationWindow = 0;
+    if(app->mainWindow){
+        app->mainWindow->showNormal();
+    }
+    else{
+        app->mainWindow = new MainWindow();
+        app->mainWindow->showNormal();
+    }
 }
 
 void PresentationWindow::handleNextSlideAction(){
@@ -84,7 +87,7 @@ void PresentationWindow::handleNextSlideAction(){
         newSlideView->setSlide(m_presentation, m_currentSlide);
         newSlideView->show();
         m_slideView->hide();
-        delete m_slideView;
+        m_slideView->deleteLater();
         m_slideView = newSlideView;
     }
 }
@@ -96,20 +99,7 @@ void PresentationWindow::handlePreviousSlideSlideAction(){
         newSlideView->setSlide(m_presentation, m_currentSlide);
         newSlideView->show();
         m_slideView->hide();
-        delete m_slideView;
+        m_slideView->deleteLater();
         m_slideView = newSlideView;
     }
-}
-
-PresentationWindow::~PresentationWindow(){
-    if(m_Window)
-        delete m_Window;
-    if(m_slideView)
-        delete m_slideView;
-    if(m_closeWindowAction)
-        delete m_closeWindowAction;
-    if(m_nextSlideAction)
-        delete m_nextSlideAction;
-    if(m_previousSlideAction)
-        delete m_previousSlideAction;
 }
