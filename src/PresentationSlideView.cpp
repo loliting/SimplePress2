@@ -109,7 +109,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
             for(unsigned int i = 0; i < m_slide->Texts.size(); i++){
                 QLabel *text = new QLabel(m_parentWidget);
                 text->setText(m_slide->Texts.at(i).Text);
-                text->setTextFormat(Qt::RichText);
+                text->setTextFormat(Qt::TextFormat::PlainText);
                 QFont font = QFont();
                 font.setBold(m_slide->Texts.at(i).isBold);
                 font.setItalic(m_slide->Texts.at(i).isItalic);
