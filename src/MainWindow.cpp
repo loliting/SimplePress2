@@ -99,15 +99,16 @@ void MainWindow::HandleOpenFile(){
             pres = new Presentation(filePath);
         }
         catch (PresentationException e){
-            QMessageBox *messageBox = new QMessageBox(this);//new QMessageBox(QMessageBox::Icon::Critical, "e", QString("Failed to Load Presentation. " + QString(e.what())), QMessageBox::StandardButton::Ok, this);
+            QMessageBox *messageBox = new QMessageBox(this);
             messageBox->setWindowTitle("Failed to Load Presentation");
             messageBox->setText(QString("Failed to Load Presentation:\n   " + QString(e.what())));
             messageBox->show();
             return;
         }
         Application* app = static_cast<Application*>(QApplication::instance());
-        if(!app->presentationWindow)
-            app->presentationWindow = new PresentationWindow();
+        if(app->presentationWindow)
+            app->presentationWindow->close();
+        app->presentationWindow = new PresentationWindow();
         this->hide();
         app->presentationWindow->setPresentation(pres);
         app->presentationWindow->showFullScreen();
