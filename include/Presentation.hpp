@@ -19,7 +19,11 @@
 
 #include <QtCore/QtCore>
 #include <vector>
+#ifdef __APPLE__
+#include <vendor/libzip/zip.h>
+#elif
 #include <zip.h>
+#endif
 #include <QtGui/QtGui>
 #include <exception>
 

@@ -17,10 +17,8 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-if(WIN32)
-	set(CMAKE_PREFIX_PATH "$ENV{QTDIR}") # When configurating this project on Windows you need to specify a environment variable QTDIR with a path to qt6 instalation.
-elseif(APPLE)
-	set(CMAKE_PREFIX_PATH "~/Qt/6.3.0/macos") # You might wanna change that.
+if(WIN32 OR APPLE)
+	set(CMAKE_PREFIX_PATH "$ENV{QTDIR}")
 endif()
 
 project(SimplePress2 VERSION 1.0 LANGUAGES CXX)
@@ -52,25 +50,35 @@ qt_add_resources(PROJECT_SOURCES Resources/res.qrc)
 
 qt_wrap_cpp(${Target_Name} PROJECT_SOURCES ${HEADER_FILES}) # MOC for header files in seperate folder
 
-set(WIN32_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/res.rc")
-set(MACOSX_BUNDLE_ICON_FILE icon.icns)
-set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.icns)
-set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 if(WIN32)
+    set(WIN32_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/res.rc")
     add_executable(${PROJECT_NAME} WIN32 ${WIN32_RESOURCES} ${PROJECT_SOURCES})
 elseif(APPLE)
-    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${APP_ICON_MACOSX} ${PROJECT_SOURCES})
+    set(MACOSX_BUNDLE_ICON_FILE icon.icns)
+    set(APP_ICON_MACOSX ${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.icns)
+    set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)
+    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${APP_ICON_MACOSX} ${PROJECT_SOURCES} Resources/libzip.5.dylib Resources/libzstd.1.dylib)
 else()
     add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-MACOSX_BUNDLE TRUE
-OUTPUT_NAME "Simple Press 2"
-MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist
-)
+if(APPLE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Resources/libzip.5.dylib")
+
+    set(RESOURCE_FILES
+    Resources/libzip.5.dylib
+    Resources/libzstd.1.dylib)
+    
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+    MACOSX_BUNDLE TRUE
+    OUTPUT_NAME "Simple Press 2"
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist
+    RESOURCE "${RESOURCE_FILES}")
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE libzip::zip)
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
-target_link_libraries(${PROJECT_NAME} PRIVATE libzip::zip)
