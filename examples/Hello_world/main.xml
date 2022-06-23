@@ -1,0 +1,42 @@
+<!--Spres files are just zip files with a main.xml file containing main Presentation structure and some other media files-->
+<!--Capitalisation of XML elements doesn't matter.-->
+<!--if field is absent its value will be equal to false/empty string/0 in case of FontSize absence of value is equal to 1-->
+<Presentation> <!--XML root element-->
+    <Title>Hello, world!</Title> <!-- Title of the presentation if is present it will be displayed as a title of the window-->
+    <Slide>
+        <SlideTitle>Title Slide</SlideTitle> <!--Currently Slide title is not used-->
+        <SlideBackgroundFilename>background.png</SlideBackgroundFilename> <!--Background of Slide, if not present background will be white-->
+                                                                          <!--using solid colors as a background is not implemented yet. 
+                                                                          In this example 25x25 screenshot of grey is used to generate solid grey background.-->
+        <Text>
+        	<String>Hello, world!</String> <!--Displayed text-->
+		    <isBold>false</isBold> <!--if true (Capitalisation doesn't matter, any value aside of true is equal to false) text will be bold-->
+		    <isItalic>false</isItalic><!--if true (Capitalisation doesn't matter, any value aside of true is equal to false) text will be italic-->
+		    <isUnderlined>false</isUnderlined><!--if true (Capitalisation doesn't matter, any value aside of true is equal to false) text will be underlined-->
+		    <isStrikedThrough>false</isStrikedThrough><!--if true (Capitalisation doesn't matter, any value aside of true is equal to false) text will be striked out-->
+            <FontSize>7</FontSize> <!--font size will be equal to FontSize * Dpi of the monitor / 250 (in pixels)-->
+            <Alignment></Alignment> <!--this field is "parsed", but not implemented yet-->
+		    <XPosition>50</XPosition> <!--X position of the element on the slide in percentage of the screen. eg. 50 means element will be centered on the screen-->
+            <YPosition>90</YPosition> <!--Y position of the element on the slide in percentage of the screen. eg. 50 means element will be centered on the screen-->
+		    <Width>100</Width>  <!--Width of the element on the slide in percentage of the screen-->
+		    <Height>20</Height> <!--Height of the element on the slide in percentage of the screen-->
+
+            <!--Color of the font in RGB-->
+		    <FontColorR>255</FontColorR>
+		    <FontColorG>255</FontColorG>
+		    <FontColorB>255</FontColorB>
+
+        </Text>
+    </Slide>
+    <Slide> <!--New slide is defined just by adding new Slide element-->
+        <SlideBackgroundFilename>background.png</SlideBackgroundFilename>
+        <Image> 
+            <Filename>HelloWorld1024x512.png</Filename> <!--Filename of the image, has to be included in the zip file-->
+            <Width>88</Width>  <!--Width of the element on the slide in percentage of the screen-->
+            <Height>52</Height><!--Height of the element on the slide in percentage of the screen-->
+            <XPosition>50</XPosition><!--X position of the element on the slide in percentage of the screen. eg. 50 means element will be centered on the screen-->
+            <YPosition>50</YPosition><!--Y position of the element on the slide in percentage of the screen. eg. 50 means element will be centered on the screen-->
+            <Alt>If this image fails to load this text will be displayed</Alt>
+        </Image> 
+    </Slide>
+</Presentation>
