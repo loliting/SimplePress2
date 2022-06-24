@@ -28,7 +28,7 @@ Application::Application(int &argc, char **argv) : QApplication(argc, argv)
             try{
                 pres = new Presentation(argv[i]);
             }
-            catch (PresentationException e){
+            catch (PresentationException& e){
                 QMessageBox *messageBox = new QMessageBox();
                 messageBox->setWindowTitle("Failed to Load Presentation");
                 messageBox->setText(QString("Failed to Load Presentation:\n   " + QString(e.what())));
@@ -48,7 +48,7 @@ bool Application::event(QEvent *event){
             try{
                 pres = new Presentation(openEvent->file());
             }
-            catch (PresentationException e){
+            catch (PresentationException& e){
                 QMessageBox *messageBox = new QMessageBox();
                 messageBox->setWindowTitle("Failed to Load Presentation");
                 messageBox->setText(QString("Failed to Load Presentation:\n   " + QString(e.what())));
@@ -59,10 +59,13 @@ bool Application::event(QEvent *event){
                 mainWindow->hide();
             if(presentationWindow){
                 presentationWindow->setPresentation(pres);
+                presentationWindow->showFullScreen();
+
             }
             else{
                 presentationWindow = new PresentationWindow();
                 presentationWindow->setPresentation(pres);
+                presentationWindow->showFullScreen();
             }
     }
     return QApplication::event(event);
