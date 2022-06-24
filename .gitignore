@@ -37,3 +37,6 @@ build/
 
 # Visual Studio Code Configurations
 .vscode/
+
+# MacOS custom folder attributes
+.DS_Store 
