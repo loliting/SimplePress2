@@ -43,7 +43,6 @@ set(HEADER_FILES
 )
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
-find_package(libzip REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
 qt_add_resources(PROJECT_SOURCES Resources/res.qrc)
@@ -77,6 +76,7 @@ if(APPLE)
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist
     RESOURCE "${RESOURCE_FILES}")
 else()
+    find_package(libzip REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE libzip::zip)
 endif()
 
