@@ -217,6 +217,8 @@ Presentation::~Presentation(){
 }
 
 QPixmap Presentation::GetImage(QString ImageFileName){
+    if(ImageFileName.contains("..") || ImageFileName.contains("/") || ImageFileName.contains("\\"))
+        throw PresentationException("Detected Path Traversal. File access denied.");
     if(m_TmpDir.isValid()){
         QString filePath = m_TmpDir.path();
         if(!filePath.endsWith("/"))
