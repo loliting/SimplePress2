@@ -93,8 +93,35 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                     image->setAlignment(Qt::AlignCenter);
                 }
                 image->setScaledContents(true);
-                //image->setFixedSize(getSize(m_slide->Images.at(i).Size, m_parentWidget->size()));
-                //image->move(getPosition(m_slide->Images.at(i).Position, m_parentWidget->size(), image->size()));
+
+                if(m_slide->Images.at(i).Size_type[0] == SizeType::pixels){
+                    image->setFixedWidth(m_slide->Texts.at(i).Size.width());
+                }
+                else{
+                    image->setFixedWidth(m_slide->Texts.at(i).Size.width() / 100.0f * m_parentWidget->width());
+                }
+                if(m_slide->Images.at(i).Size_type[1] == SizeType::pixels){
+                    image->setFixedHeight(m_slide->Texts.at(i).Size.height());
+                }
+                else{
+                    image->setFixedHeight(m_slide->Texts.at(i).Size.height() / 100.0f * m_parentWidget->height());
+                }
+                if(m_slide->Images.at(i).Position_type[0] == SizeType::pixels){
+                    image->move(m_slide->Texts.at(i).Position.x(), 0);
+                }
+                else{
+                    image->move(
+                            getXPosition((float)m_slide->Texts.at(i).Position.x() / 100.0f,
+                            m_parentWidget->size(), image->size()), 0);
+                }
+                if(m_slide->Images.at(i).Position_type[1] == SizeType::pixels){
+                    image->move(image->x(), m_slide->Texts.at(i).Position.y());
+                }
+                else{
+                    image->move(image->x(),
+                            getYPosition((float)m_slide->Texts.at(i).Position.y() / 100.0f,
+                            m_parentWidget->size(), image->size()));
+                }
             }
             for(unsigned int i = 0; i < m_slide->Texts.size(); i++){
                 QLabel *text = new QLabel(m_parentWidget);

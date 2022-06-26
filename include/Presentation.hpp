@@ -72,7 +72,9 @@ struct PresentationImage
 public:
     QString FileName;
     QPoint Position;
+    SizeType Position_type[2];
     QSize Size;
+    SizeType Size_type[2];
     QString Alt; 
 };
 

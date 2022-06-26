@@ -201,20 +201,31 @@ Presentation::Presentation(QString FilePath){
         slide->SlideTitle = GetAttributeValue("Title", slide_node);
         slide->SlideBackgroundFileName = GetAttributeValue("Filename", slide_node->first_node("SlideBackground"));
 
-        /*unsigned int imageCount = 0;
+        unsigned int imageCount = 0;
         image_node = slide_node->first_node("Image", 0UL, false);
         while(image_node){
             PresentationImage image;
             image.Alt = GetValue("Alt", image_node);
-            image.FileName = GetValue("Filename", image_node);
-            image.Position = QPoint(GetIntValue("XPosition", image_node),
-                                    GetIntValue("YPosition", image_node));
-            image.Size = QSize(GetIntValue("Width", image_node),
-                                    GetIntValue("Height", image_node));
+            image.FileName = GetAttributeValue("Filename", image_node);
+            int x, y;
+            SizeType x_type, y_type;
+            printf("while(image_node)\n");
+            temp_node = image_node->first_node("size", 0UL, false);
+            GetIntValue("width", temp_node, &x, &x_type);
+            GetIntValue("height", temp_node, &y, &y_type);
+            image.Size_type[0] = x_type;
+            image.Size_type[1] = y_type;
+            image.Size = QSize(x, y);
+            temp_node = image_node->first_node("position", 0UL, false);
+            GetIntValue("x", temp_node, &x, &x_type);
+            GetIntValue("y", temp_node, &y, &y_type);
+            image.Position_type[0] = x_type;
+            image.Position_type[1] = y_type;
+            image.Position = QPoint(x, y);
             slide->Images.push_back(image);
             imageCount++;
             image_node = image_node->next_sibling(image_node->name(), image_node->name_size(), false);
-        }*/
+        }
 
         unsigned int textCount = 0;
         text_node = slide_node->first_node("Text", 0UL, false);
