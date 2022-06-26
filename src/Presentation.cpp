@@ -201,7 +201,7 @@ Presentation::Presentation(QString FilePath){
         slide->SlideTitle = GetAttributeValue("Title", slide_node);
         slide->SlideBackgroundFileName = GetAttributeValue("Filename", slide_node->first_node("SlideBackground"));
 
-        unsigned int imageCount = 0;
+        /*unsigned int imageCount = 0;
         image_node = slide_node->first_node("Image", 0UL, false);
         while(image_node){
             PresentationImage image;
@@ -214,7 +214,7 @@ Presentation::Presentation(QString FilePath){
             slide->Images.push_back(image);
             imageCount++;
             image_node = image_node->next_sibling(image_node->name(), image_node->name_size(), false);
-        }
+        }*/
 
         unsigned int textCount = 0;
         text_node = slide_node->first_node("Text", 0UL, false);
@@ -222,7 +222,7 @@ Presentation::Presentation(QString FilePath){
             PresentationText text;
             text.Text = GetValue("String", text_node);
             text.Text.replace("\n", "\n");
-            
+
             /*text.Alignment = GetIntValue("Alignment", text_node);
             text.isBold = GetBooleanValue("isBold", text_node);
             text.isItalic = GetBooleanValue("isItalic", text_node);
