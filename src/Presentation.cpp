@@ -29,17 +29,27 @@ bool DoesFileExist(const char* file_name){
     }   
 }
 
-static char* GetValue(const char* name, rapidxml::xml_node<> *root_node){
-    if(!root_node)
+static char* GetAttributeValue(const char* name, rapidxml::xml_node<> *node){
+    if(!node)
         return new char[1]{0};
-    rapidxml::xml_node<> *node = root_node->first_node(name, 0UL, false);
+    rapidxml::xml_attribute<char> *attrib = node->first_attribute(name, 0UL, false);
+    if(!attrib)
+        return new char[1]{0}; 
+    char* attrib_val = attrib->value();
+    return attrib_val;
+}
+
+static char* GetValue(const char* name, rapidxml::xml_node<> *parent_node){
+    if(!parent_node)
+        return new char[1]{0};
+    rapidxml::xml_node<> *node = parent_node->first_node(name, 0UL, false);
     if(!node)
         return new char[1]{0};
     return node->value();
 }
 
-static int GetIntValue(const char* name, rapidxml::xml_node<> *root_node){
-    char* str = GetValue(name, root_node);
+static int GetIntValue(const char* name, rapidxml::xml_node<> *parent_node){
+    char* str = GetValue(name, parent_node);
     if(strlen(str) > 2){
         if(str[0] == '0' && (str[1] == 'x' || str[1] == 'X')){
             str += 2;
@@ -60,8 +70,8 @@ static int GetIntValue(const char* name, rapidxml::xml_node<> *root_node){
     return 0;
 }
 
-static bool GetBooleanValue(const char* name, rapidxml::xml_node<> *root_node){
-    char* str = GetValue(name, root_node);
+static bool GetBooleanValue(const char* name, rapidxml::xml_node<> *parent_node){
+    char* str = GetValue(name, parent_node);
     int i = 0;
     while(str[i]){
         str[i] = tolower(str[i]);
@@ -70,6 +80,52 @@ static bool GetBooleanValue(const char* name, rapidxml::xml_node<> *root_node){
     if(!strcmp(str, "true"))
         return true;
     return false;
+}
+
+static void GetIntValue(const char* name, rapidxml::xml_node<> *parent_node, int* value, SizeType *type){
+    QString qstr = GetValue(name, parent_node);
+    if(type){
+        if(qstr.endsWith("px")){
+            *type = SizeType::pixels;
+            qstr.remove(qstr.length() - 2, 2);
+        }
+        else if(qstr.endsWith("%")){
+            *type = SizeType::percent;
+            qstr.remove(qstr.length() - 1, 1);
+        }
+        else if(qstr.endsWith("p")){
+            *type = SizeType::points;
+            qstr.remove(qstr.length() - 1, 1);
+        }
+        else{
+            *type = SizeType::none;
+        }
+    }
+    if(qstr.length() > 2){
+        qstr = qstr.toLower();
+        if(qstr.at(0) == '0' && qstr.at(1) == 'x'){
+            qstr.remove(0, 2);
+            
+            try{
+                *value = std::stoi(qstr.toStdString()  , nullptr, 16);
+            }
+            catch(std::exception&){
+                if(type)
+                    *type = SizeType::none;
+                *value = 0;
+            }
+            return;
+        }
+    }
+    try{
+        *value = std::stoi(qstr.toStdString(), nullptr, 10);
+    }
+    catch(std::exception&){
+        if(type)
+            *type = SizeType::none;
+        *value = 0;
+    }
+    return;
 }
 
 Presentation::Presentation(QString FilePath){
@@ -113,13 +169,15 @@ Presentation::Presentation(QString FilePath){
     }
     zip_fclose(zf);
 
-    //PARSING
+#pragma region PARSING
 
     rapidxml::xml_document<> xml_doc;
     rapidxml::xml_node<> *root_node = NULL;
     rapidxml::xml_node<> *slide_node = NULL;
     rapidxml::xml_node<> *image_node = NULL;
     rapidxml::xml_node<> *text_node = NULL;
+    rapidxml::xml_node<> *temp_node = NULL;
+    
     try{
         xml_doc.parse<0>(XMLstr);
     }
@@ -134,14 +192,14 @@ Presentation::Presentation(QString FilePath){
         throw PresentationException("Failed to find XML root element (Presentation) in main.xml file inside the spres archive.");
     }
 
-    this->Title = GetValue("Title", root_node);
+    this->Title = GetAttributeValue("Title", root_node);
     slide_node = root_node->first_node("Slide", 0UL, false);
     int slide_count = 0;
     while (slide_node)
     {
         PresentationSlide* slide = new PresentationSlide;
-        slide->SlideTitle = GetValue("SlideTitle ", slide_node);
-        slide->SlideBackgroundFileName = GetValue("SlideBackgroundFilename", slide_node);
+        slide->SlideTitle = GetAttributeValue("Title", slide_node);
+        slide->SlideBackgroundFileName = GetAttributeValue("Filename", slide_node->first_node("SlideBackground"));
 
         unsigned int imageCount = 0;
         image_node = slide_node->first_node("Image", 0UL, false);
@@ -163,28 +221,42 @@ Presentation::Presentation(QString FilePath){
         while(text_node){
             PresentationText text;
             text.Text = GetValue("String", text_node);
-            text.Text.replace("\\n", "\n");
-            text.Alignment = GetIntValue("Alignment", text_node);
+            text.Text.replace("\n", "\n");
+            
+            /*text.Alignment = GetIntValue("Alignment", text_node);
             text.isBold = GetBooleanValue("isBold", text_node);
             text.isItalic = GetBooleanValue("isItalic", text_node);
             text.isUnderlined = GetBooleanValue("isUnderlined", text_node);
-            text.isStrikedThrough = GetBooleanValue("isStrikedThrough", text_node);
-            text.FontSize = (GetIntValue("FontSize", text_node) < 1) ? GetIntValue("FontSize", text_node) : 1;
-            text.Size = QSize(GetIntValue("Width", text_node),
-                              GetIntValue("Height", text_node));
-            text.Position = QPoint(GetIntValue("XPosition", text_node),
-                                   GetIntValue("YPosition", text_node));
-            union RGBA
-            {
+            text.isStrikedThrough = GetBooleanValue("isStrikedThrough", text_node);*/ // these features are not implemeneted yet in new syntax.
+
+            temp_node = text_node->first_node("Font", 0UL, false);
+            GetIntValue("Size", temp_node, &text.fontSize, &text.fontSizeType);
+            if(temp_node)
+                temp_node = temp_node->first_node("Color", 0UL, false);
+            union {
                 uint32_t RGBA;
                 uint8_t bytes[4];
-            };
-            RGBA rgba;
-            rgba.bytes[0] = (uint8_t)GetIntValue("FontColorR", text_node);
-            rgba.bytes[1] = (uint8_t)GetIntValue("FontColorG", text_node);
-            rgba.bytes[2] = (uint8_t)GetIntValue("FontColorB", text_node);
-            rgba.bytes[3] = 255;
-            text.FontColor = rgba.RGBA;
+            } RGBA;
+            RGBA.bytes[0] = (uint8_t)GetIntValue("r", temp_node);
+            RGBA.bytes[1] = (uint8_t)GetIntValue("g", temp_node);
+            RGBA.bytes[2] = (uint8_t)GetIntValue("b", temp_node);
+            RGBA.bytes[3] = 255;
+            text.FontColor = RGBA.RGBA;
+            int x, y;
+            SizeType x_type, y_type;
+            temp_node = text_node->first_node("size", 0UL, false);
+            GetIntValue("width", temp_node, &x, &x_type);
+            GetIntValue("height", temp_node, &y, &y_type);
+            text.Size_type[0] = x_type;
+            text.Size_type[1] = y_type;
+            text.Size = QSize(x, y);
+            temp_node = text_node->first_node("position", 0UL, false);
+            GetIntValue("x", temp_node, &x, &x_type);
+            GetIntValue("y", temp_node, &y, &y_type);
+            text.Position_type[0] = x_type;
+            text.Position_type[1] = y_type;
+            text.Position = QPoint(x, y);
+
             slide->Texts.push_back(text);
             textCount++;
             text_node = text_node->next_sibling(text_node->name(), text_node->name_size(), false);
@@ -196,7 +268,7 @@ Presentation::Presentation(QString FilePath){
         slide_count++;
         slide_node = slide_node->next_sibling();
     }
-    //END PARSING
+#pragma endregion PARSING
 }
 
 Presentation::Presentation(Presentation& other){

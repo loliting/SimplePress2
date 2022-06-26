@@ -45,22 +45,12 @@ void PresentationSlideView::clearSlideView(){
 
 }
 
-static QSize getSize(const QSize& percentSize, const QSize& screenSize){
-    return QSize((int)((float)percentSize.width() / 100.0f * screenSize.width()),
-                 (int)((float)percentSize.height() / 100.0f * screenSize.height()));
+static int getXPosition(const float percentXPosition, const QSize& screenSize, const QSize& widgetSize){
+    return (int)(percentXPosition * (float)screenSize.width()) - (int)((float)widgetSize.width() / 2.0f);
 }
 
-static QPoint getPosition(const QPoint& percentPosition, const QSize& screenSize, const QSize& widgetSize){
-    return QPoint((int)((float)percentPosition.x() / 100.0f * (float)screenSize.width()) - (int)((float)widgetSize.width() / 2.0f),
-                  (int)((float)-(percentPosition.y() - 100) / 100.0f * (float)screenSize.height()) - (int)((float)widgetSize.height() / 2.0f));
-}
-
-Qt::AlignmentFlag GetQtAlignmentFromSpresAlignment(unsigned int spresAlignment){
-    switch(spresAlignment){
-        default:
-            return (Qt::AlignmentFlag)(4 | 128);
-            //TODO: Handle Alignments
-    }
+static int getYPosition(const float percentYPosition, const QSize& screenSize, const QSize& widgetSize){
+    return (int)((float)-(percentYPosition - 1) * (float)screenSize.height()) - (int)((float)widgetSize.height() / 2.0f);
 }
 
 void PresentationSlideView::setSlide(Presentation* presentation, unsigned int index){
@@ -103,8 +93,8 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                     image->setAlignment(Qt::AlignCenter);
                 }
                 image->setScaledContents(true);
-                image->setFixedSize(getSize(m_slide->Images.at(i).Size, m_parentWidget->size()));
-                image->move(getPosition(m_slide->Images.at(i).Position, m_parentWidget->size(), image->size()));
+                //image->setFixedSize(getSize(m_slide->Images.at(i).Size, m_parentWidget->size()));
+                //image->move(getPosition(m_slide->Images.at(i).Position, m_parentWidget->size(), image->size()));
             }
             for(unsigned int i = 0; i < m_slide->Texts.size(); i++){
                 QLabel *text = new QLabel(m_parentWidget);
@@ -115,14 +105,53 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                 font.setItalic(m_slide->Texts.at(i).isItalic);
                 font.setStrikeOut(m_slide->Texts.at(i).isStrikedThrough);
                 font.setUnderline(m_slide->Texts.at(i).isUnderlined);
-                font.setPixelSize(m_slide->Texts.at(i).FontSize * QPaintDevice::logicalDpiX() * QPaintDevice::logicalDpiY() / 250);
+                switch (m_slide->Texts.at(i).fontSizeType)
+                {
+                    case SizeType::points:
+                        font.setPixelSize(m_slide->Texts.at(i).fontSize * screen()->physicalDotsPerInch() / 72);
+                        break;
+                    case SizeType::pixels:
+                        font.setPixelSize(m_slide->Texts.at(i).fontSize);
+                        break;
+                    default:
+                        if(m_slide->Texts.at(i).fontSize < 1)
+                            m_slide->Texts.at(i).fontSize = 1;
+                        font.setPixelSize(m_slide->Texts.at(i).fontSize * screen()->physicalDotsPerInch() / 72);
+                        break;
+                }
                 text->setFont(font);
                 QPalette palette = QPalette();
                 palette.setColor(text->foregroundRole(), QColor::fromRgba(m_slide->Texts.at(i).FontColor));
                 text->setPalette(palette);
-                text->setFixedSize(getSize(m_slide->Texts.at(i).Size, m_parentWidget->size()));
-                text->move(getPosition(m_slide->Texts.at(i).Position, m_parentWidget->size(), text->size()));
-                text->setAlignment(GetQtAlignmentFromSpresAlignment(m_slide->Texts.at(i).Alignment));
+                if(m_slide->Texts.at(i).Size_type[0] == SizeType::pixels){
+                    text->setFixedWidth(m_slide->Texts.at(i).Size.width());
+                }
+                else{
+                    text->setFixedWidth(m_slide->Texts.at(i).Size.width() / 100.0f * m_parentWidget->width());
+                }
+                if(m_slide->Texts.at(i).Size_type[1] == SizeType::pixels){
+                    text->setFixedHeight(m_slide->Texts.at(i).Size.height());
+                }
+                else{
+                    text->setFixedHeight(m_slide->Texts.at(i).Size.height() / 100.0f * m_parentWidget->height());
+                }
+                if(m_slide->Texts.at(i).Position_type[0] == SizeType::pixels){
+                    text->move(m_slide->Texts.at(i).Position.x(), 0);
+                }
+                else{
+                    text->move(
+                            getXPosition((float)m_slide->Texts.at(i).Position.x() / 100.0f,
+                            m_parentWidget->size(), text->size()), 0);
+                }
+                if(m_slide->Texts.at(i).Position_type[1] == SizeType::pixels){
+                    text->move(text->x(), m_slide->Texts.at(i).Position.y());
+                }
+                else{
+                    text->move(text->x(),
+                            getYPosition((float)m_slide->Texts.at(i).Position.y() / 100.0f,
+                            m_parentWidget->size(), text->size()));
+                }
+                text->setAlignment(Qt::AlignCenter);
                 text->setScaledContents(true);
                 text->setWordWrap(true);
                 

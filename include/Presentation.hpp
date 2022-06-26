@@ -21,7 +21,7 @@
 #include <vector>
 #ifdef __APPLE__
 #include <vendor/libzip/zip.h>
-#elif
+#else
 #include <zip.h>
 #endif
 #include <QtGui/QtGui>
@@ -41,6 +41,14 @@ private:
     const char *m_what;
 };
 
+
+enum SizeType{
+    none,
+    pixels,
+    points,
+    percent
+};
+
 struct PresentationText
 {
 public:
@@ -50,9 +58,12 @@ public:
     bool isUnderlined;
     bool isStrikedThrough;
     unsigned int Alignment;
-    unsigned int FontSize;
+    int fontSize;
+    SizeType fontSizeType;
     QPoint Position;
+    SizeType Position_type[2];
     QSize Size;
+    SizeType Size_type[2];
     uint32_t FontColor;
 };
 
