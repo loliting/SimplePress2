@@ -209,7 +209,6 @@ Presentation::Presentation(QString FilePath){
             image.FileName = GetAttributeValue("Filename", image_node);
             int x, y;
             SizeType x_type, y_type;
-            printf("while(image_node)\n");
             temp_node = image_node->first_node("size", 0UL, false);
             GetIntValue("width", temp_node, &x, &x_type);
             GetIntValue("height", temp_node, &y, &y_type);
