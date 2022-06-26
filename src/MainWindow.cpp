@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QList<QKeySequence> ExitShortcutsList;
     ExitShortcutsList << Qt::Key_Escape << QKeySequence(Qt::CTRL | Qt::Key_W);
     m_ExitAction->setShortcuts(ExitShortcutsList);
-#elif
+#else
     m_ExitAction->setShortcut(Qt::Key_Escape);
 #endif
 

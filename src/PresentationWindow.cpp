@@ -35,7 +35,7 @@ PresentationWindow::PresentationWindow(QWidget *parent) : QMainWindow(parent) {
 #if __APPLE__
     keySequenceList << Qt::Key_Escape << QKeySequence(Qt::CTRL | Qt::Key_W);
     m_closeWindowAction->setShortcuts(keySequenceList);
-#elif
+#else
     m_closeWindowAction->setShortcut(Qt::Key_Escape);
 #endif
     keySequenceList = QList<QKeySequence>();
