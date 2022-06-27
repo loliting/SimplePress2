@@ -135,7 +135,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                 switch (m_slide->Texts.at(i).fontSizeType)
                 {
                     case SizeType::points:
-                        font.setPixelSize(m_slide->Texts.at(i).fontSize * screen()->physicalDotsPerInch() / 72);
+                        font.setPixelSize((int)((float)m_parentWidget->height() / 400.0f * (float)m_slide->Texts.at(i).fontSize));
                         break;
                     case SizeType::pixels:
                         font.setPixelSize(m_slide->Texts.at(i).fontSize);
@@ -143,7 +143,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                     default:
                         if(m_slide->Texts.at(i).fontSize < 1)
                             m_slide->Texts.at(i).fontSize = 1;
-                        font.setPixelSize(m_slide->Texts.at(i).fontSize * screen()->physicalDotsPerInch() / 72);
+                        font.setPixelSize((int)((float)m_parentWidget->height() / 400.0f * (float)m_slide->Texts.at(i).fontSize));
                         break;
                 }
                 text->setFont(font);
