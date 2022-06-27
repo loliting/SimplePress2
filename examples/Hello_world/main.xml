@@ -12,7 +12,7 @@
 		        <Height>20%</Height> 
             </Size>
             <Font>
-                <Size>7p</Size>
+                <Size>7pt</Size>
                 <Color>
                     <R>255</R>
                     <G>255</G>
