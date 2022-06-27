@@ -93,9 +93,9 @@ static void GetIntValue(const char* name, rapidxml::xml_node<> *parent_node, int
             *type = SizeType::percent;
             qstr.remove(qstr.length() - 1, 1);
         }
-        else if(qstr.endsWith("p")){
+        else if(qstr.endsWith("pt")){
             *type = SizeType::points;
-            qstr.remove(qstr.length() - 1, 1);
+            qstr.remove(qstr.length() - 2, 2);
         }
         else{
             *type = SizeType::none;
