@@ -93,7 +93,7 @@ void MainWindow::HandleOpenAboutAction(){
 
 void MainWindow::HandleOpenFile(){
     Presentation* pres = nullptr;
-    QString filePath = QFileDialog::getOpenFileName(this, "Open .spres presentation", QString(), ".spres files (*.spres)");
+    QString filePath = QFileDialog::getOpenFileName(this, "Open .spres presentation", QDir::homePath(), ".spres files (*.spres)");
     if(!filePath.isEmpty()){
         try{
             pres = new Presentation(filePath);
