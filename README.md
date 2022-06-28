@@ -1,15 +1,22 @@
 # Simple Press 2
 
-Simple Press is a simple presentation program written in C++. It currently supports only it's own file format - spres.
+Simple Press is a simple presentation program written in C++. It currently supports only it's own file format - spres. In future support for other file formats will be implemented.
 
 ## Dependencies
  - cmake
- - libzip
+ - libzip (only Linux + Windows)
  - Qt
 
 
 ## Building
-#### Currently only MacOS is officially supported, but it should work on other platforms  
+### Linux
+
+```console
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+```
+
 ### MacOS
 
 ```console 
@@ -19,7 +26,6 @@ cmake ..
 make -j$(sysctl -n hw.logicalcpu)
 ```
 
-## spres file format 
-# CURRENTLY SPRES FORMAT IS DURING DEVELOPMENT - ANYTHING CAN CHANGE ANYTIME
-TODO: small format overview <br/>
+## spres file format
+TODO: small format overview <br/><br/>
 for now check examples
