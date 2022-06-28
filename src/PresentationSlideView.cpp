@@ -79,6 +79,10 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                     printf("[WARNING] Failed to display image: %s. Error: %s.\n", m_slide->SlideBackgroundFileName.toStdString().c_str(), e.what());
                 }
             }
+            else if(m_slide->hasBackgroundColor){
+                this->setPalette(QPalette(QColor(m_slide->SlideBackgroundColor)));
+
+            }
             for(unsigned int i = 0; i < m_slide->Images.size(); i++){
                 QLabel* image = new QLabel(m_parentWidget);
                 try

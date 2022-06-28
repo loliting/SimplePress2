@@ -199,7 +199,23 @@ Presentation::Presentation(QString FilePath){
     {
         PresentationSlide* slide = new PresentationSlide;
         slide->SlideTitle = GetAttributeValue("Title", slide_node);
-        slide->SlideBackgroundFileName = GetAttributeValue("Filename", slide_node->first_node("SlideBackground"));
+        temp_node = slide_node->first_node("SlideBackground");
+        slide->SlideBackgroundFileName = GetAttributeValue("Filename", temp_node);
+        if(slide->SlideBackgroundFileName.isEmpty()){
+            if(temp_node){
+                temp_node = temp_node->first_node("Color", 0UL, false);
+                union {
+                    uint32_t RGBA;
+                    uint8_t bytes[4];
+                } RGBA;
+                RGBA.bytes[0] = (uint8_t)GetIntValue("r", temp_node);
+                RGBA.bytes[1] = (uint8_t)GetIntValue("g", temp_node);
+                RGBA.bytes[2] = (uint8_t)GetIntValue("b", temp_node);
+                RGBA.bytes[3] = 255;
+                slide->SlideBackgroundColor = RGBA.RGBA;
+                slide->hasBackgroundColor = true;
+            }
+        }
 
         unsigned int imageCount = 0;
         image_node = slide_node->first_node("Image", 0UL, false);

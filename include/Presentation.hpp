@@ -82,6 +82,8 @@ struct PresentationSlide
 {
 public:
     QString SlideBackgroundFileName;
+    u_int32_t SlideBackgroundColor;
+    bool hasBackgroundColor = false;
     QString SlideTitle;
     std::vector<PresentationText> Texts;
     std::vector<PresentationImage> Images;
