@@ -1,6 +1,13 @@
 <Presentation Title="Hello, world!">
     <Slide Title="Title slide">
-        <SlideBackground Filename="background.png"/>
+    <!-- <SlideBackground Filename="background.png"/> -->
+        <SlideBackground>
+            <Color>
+                <R>40</R>
+                <G>40</G>
+                <B>40</B>
+            </Color>
+        </SlideBackground>
         <Text String="Hello, World!">
         	<String>Hello, world!</String>
             <Position>
@@ -22,7 +29,14 @@
         </Text>
     </Slide>
     <Slide>
-        <SlideBackground Filename="background.png"/>
+        <!--<SlideBackground Filename="background.png/>"-->
+        <SlideBackground>
+            <Color>
+                <R>0</R>
+                <G>0</G>
+                <B>0</B>
+            </Color>
+        </SlideBackground>
         <Image Filename="HelloWorld.png"> 
             <Alt>Hello, World!</Alt>
             <Size>
