@@ -12,11 +12,11 @@
         	<String>Hello, world!</String>
             <Position>
                 <X>50%</X>
-                <Y>90%</Y>
+                <Y>50%</Y>
             </Position>
             <Size>
 		        <Width>100%</Width> 
-		        <Height>20%</Height> 
+		        <Height>100%</Height> 
             </Size>
             <Font>
                 <Size>7pt</Size>
@@ -26,6 +26,10 @@
                     <B>255</B>
                 </Color>
             </Font>
+            <Alignment>
+                <Horizontal>Left</Horizontal> <!--Left Center Right-->
+                <Vertical>Top</Vertical> <!--Top Middle Bottom-->
+            </Alignment>
         </Text>
     </Slide>
     <Slide>
