@@ -19,6 +19,10 @@
                 </array>
                 <key>CFBundleTypeRole</key>
                 <string>Viewer</string>
+                <key>CFBundleTypeName</key>
+                <string>Simple Press Presentation</string>
+                <key>CFBundleTypeIconFile</key>
+                <string>icon.icns</string>
             </dict>
         </array>
 
