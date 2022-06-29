@@ -48,6 +48,45 @@ static char* GetValue(const char* name, rapidxml::xml_node<> *parent_node){
     return node->value();
 }
 
+static int GetAlignmentFlags(rapidxml::xml_node<> *node){
+    int align = 0;
+    if(!node)
+        return Qt::AlignCenter;
+    rapidxml::xml_node<> *horizontal_node = NULL;
+    rapidxml::xml_node<> *vertical_node = NULL;
+    horizontal_node = node->first_node("horizontal", 0UL, false);
+    if(horizontal_node){
+        QString str = QString(horizontal_node->value());
+        str = str.toLower();
+        if(str.contains("left"))
+            align |= Qt::AlignLeft;
+        else if(str.contains("center") || str.contains("middle"))
+            align |= Qt::AlignHCenter;
+        else if(str.contains("right"))
+            align |= Qt::AlignRight;
+        else
+            align |= Qt::AlignHCenter;
+    }
+    else
+        align |= Qt::AlignHCenter;
+    vertical_node = node->first_node("vertical", 0UL, false);
+    if(vertical_node){
+        QString str = QString(vertical_node->value());
+        str = str.toLower();
+        if(str.contains("top"))
+            align |= Qt::AlignTop;
+        else if(str.contains("center") || str.contains("middle"))
+            align |= Qt::AlignVCenter;
+        else if(str.contains("bottom"))
+            align |= Qt::AlignBottom;
+        else
+            align |= Qt::AlignHCenter;
+    }
+    else
+        align |= Qt::AlignVCenter;
+    return align;
+}
+
 static int GetIntValue(const char* name, rapidxml::xml_node<> *parent_node){
     char* str = GetValue(name, parent_node);
     if(strlen(str) > 2){
@@ -249,11 +288,12 @@ Presentation::Presentation(QString FilePath){
             text.Text = GetValue("String", text_node);
             text.Text.replace("\n", "\n");
 
-            /*text.Alignment = GetIntValue("Alignment", text_node);
-            text.isBold = GetBooleanValue("isBold", text_node);
-            text.isItalic = GetBooleanValue("isItalic", text_node);
-            text.isUnderlined = GetBooleanValue("isUnderlined", text_node);
-            text.isStrikedThrough = GetBooleanValue("isStrikedThrough", text_node);*/ // these features are not implemeneted yet in new syntax.
+            text.isBold = false;
+            text.isItalic = false;
+            text.isStrikedOut = false;
+            text.isUnderlined = false;
+
+            text.Alignment = GetAlignmentFlags(text_node->first_node("Alignment", 0UL, false));
 
             temp_node = text_node->first_node("Font", 0UL, false);
             GetIntValue("Size", temp_node, &text.fontSize, &text.fontSizeType);

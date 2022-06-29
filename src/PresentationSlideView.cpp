@@ -134,7 +134,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                 QFont font = QFont();
                 font.setBold(m_slide->Texts.at(i).isBold);
                 font.setItalic(m_slide->Texts.at(i).isItalic);
-                font.setStrikeOut(m_slide->Texts.at(i).isStrikedThrough);
+                font.setStrikeOut(m_slide->Texts.at(i).isStrikedOut);
                 font.setUnderline(m_slide->Texts.at(i).isUnderlined);
                 switch (m_slide->Texts.at(i).fontSizeType)
                 {
@@ -182,7 +182,7 @@ void PresentationSlideView::setSlide(Presentation* presentation, unsigned int in
                             getYPosition((float)m_slide->Texts.at(i).Position.y() / 100.0f,
                             m_parentWidget->size(), text->size()));
                 }
-                text->setAlignment(Qt::AlignCenter);
+                text->setAlignment((Qt::AlignmentFlag)m_slide->Texts.at(i).Alignment);
                 text->setScaledContents(true);
                 text->setWordWrap(true);
                 

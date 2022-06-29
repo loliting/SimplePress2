@@ -56,8 +56,8 @@ public:
     bool isBold;
     bool isItalic;
     bool isUnderlined;
-    bool isStrikedThrough;
-    unsigned int Alignment;
+    bool isStrikedOut;
+    int Alignment;
     int fontSize;
     SizeType fontSizeType;
     QPoint Position;
