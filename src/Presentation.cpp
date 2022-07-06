@@ -286,8 +286,11 @@ Presentation::Presentation(QString FilePath){
         while(text_node){
             PresentationText text;
             text.Text = GetValue("String", text_node);
-            text.Text.replace("\n", "\n");
-
+            text.Text.replace("\\n", "\n");
+            if(text.Text.isEmpty()){
+                text.Text = GetAttributeValue("String", text_node);
+                text.Text.replace("\\n", "\n");
+            }
             text.isBold = false;
             text.isItalic = false;
             text.isStrikedOut = false;
