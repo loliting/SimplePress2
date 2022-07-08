@@ -9,7 +9,6 @@
             </Color>
         </SlideBackground>
         <Text String="Hello, World!">
-        	<String>Hello, world!</String>
             <Position>
                 <X>50%</X>
                 <Y>50%</Y>
@@ -27,8 +26,8 @@
                 </Color>
             </Font>
             <Alignment>
-                <Horizontal>Left</Horizontal> <!--Left Center Right-->
-                <Vertical>Top</Vertical> <!--Top Middle Bottom-->
+                <Horizontal>center</Horizontal> <!--Left Center Right-->
+                <Vertical>center</Vertical> <!--Top Middle Bottom-->
             </Alignment>
         </Text>
     </Slide>
