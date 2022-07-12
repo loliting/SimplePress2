@@ -45,7 +45,6 @@ PresentationWindow::PresentationWindow(QWidget *parent) : QMainWindow(parent) {
     keySequenceList = QList<QKeySequence>();
     keySequenceList << Qt::Key_Left << Qt::Key_H << Qt::Key_A;
     m_previousSlideAction->setShortcuts(keySequenceList);
-
     connect(m_closeWindowAction, &QAction::triggered, this, &PresentationWindow::handleCloseWindowAction);
     connect(m_nextSlideAction, &QAction::triggered, this, &PresentationWindow::handleNextSlideAction);
     connect(m_previousSlideAction, &QAction::triggered, this, &PresentationWindow::handlePreviousSlideSlideAction);
@@ -64,6 +63,14 @@ void PresentationWindow::setPresentation(Presentation *Pres){
     if(m_presentation->Slides.size() > 0){
         m_slideView->setSlide(m_presentation, m_currentSlide);
         m_slideView->show();
+        m_currentSlideLabel = new QLabel(QString("1/" + QString::number(m_presentation->Slides.size())), this);
+        m_currentSlideLabel->setScaledContents(true);
+        QFont font = QFont(m_currentSlideLabel->font());
+        font.setPixelSize((int)((float)height() / 400.0f * 8));
+        m_currentSlideLabel->setFont(font);
+        m_currentSlideLabel->move(width() - m_currentSlideLabel->width() * 0.6f,
+                                  height() - m_currentSlideLabel->height());
+        m_currentSlideLabel->show();
     }
 }
 
@@ -89,6 +96,10 @@ void PresentationWindow::handleNextSlideAction(){
         m_slideView->hide();
         m_slideView->deleteLater();
         m_slideView = newSlideView;
+        if(m_currentSlideLabel){
+           m_currentSlideLabel->setText(QString(QString::number(m_currentSlide + 1) + "/" + QString::number(m_presentation->Slides.size())));
+           m_currentSlideLabel->raise();
+        }
     }
 }
 
@@ -101,5 +112,9 @@ void PresentationWindow::handlePreviousSlideSlideAction(){
         m_slideView->hide();
         m_slideView->deleteLater();
         m_slideView = newSlideView;
+        if(m_currentSlideLabel){
+           m_currentSlideLabel->setText(QString(QString::number(m_currentSlide + 1) + "/" + QString::number(m_presentation->Slides.size())));
+           m_currentSlideLabel->raise();
+        }
     }
 }

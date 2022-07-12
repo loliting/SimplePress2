@@ -39,4 +39,5 @@ private:
     PresentationSlideView *m_slideView;
     unsigned int m_currentSlide;
     QAction *m_nextSlideAction, *m_previousSlideAction, *m_closeWindowAction;
+    QLabel *m_currentSlideLabel;
 };
